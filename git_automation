@@ -1,0 +1,77 @@
+
+#!/bin/bash
+
+# Set variables
+GITHUB_USER="your-username"
+GITHUB_REPO="your-repository"
+NEW_BRANCH="feature-branch"
+COMMIT_MESSAGE="Automated commit"
+GITHUB_TOKEN="your-github-token"
+
+# Clone repository
+clone_repo() {
+    echo "Cloning repository..."
+    git clone https://github.com/$GITHUB_USER/$GITHUB_REPO.git
+    cd $GITHUB_REPO || exit
+}
+
+# Create a new branch
+create_branch() {
+    echo "Creating new branch: $NEW_BRANCH"
+    git checkout -b $NEW_BRANCH
+}
+
+# Make changes, commit, and push
+commit_changes() {
+    echo "Making changes..."
+    echo "Sample change" >> sample.txt
+    git add .
+    git commit -m "$COMMIT_MESSAGE"
+    git push origin $NEW_BRANCH
+}
+
+# Create a Pull Request
+create_pull_request() {
+    echo "Creating a pull request..."
+    gh pr create --title "Automated PR" --body "This is an automated PR." --base main --head $NEW_BRANCH
+}
+
+# Merge PR
+merge_pull_request() {
+    PR_NUMBER=$(gh pr list --head $NEW_BRANCH --json number -q '.[0].number')
+    if [[ -z "$PR_NUMBER" ]]; then
+        echo "No PR found for branch $NEW_BRANCH"
+        exit 1
+    fi
+    echo "Merging PR #$PR_NUMBER"
+    gh pr merge $PR_NUMBER --merge
+}
+
+# List Issues
+list_issues() {
+    echo "Fetching GitHub issues..."
+    gh issue list
+}
+
+# Main Menu
+echo "Select an action:"
+echo "1. Clone Repository"
+echo "2. Create Branch"
+echo "3. Commit & Push Changes"
+echo "4. Create Pull Request"
+echo "5. Merge Pull Request"
+echo "6. List Issues"
+echo "7. Exit"
+read -p "Enter choice: " choice
+
+case $choice in
+    1) clone_repo ;;
+    2) create_branch ;;
+    3) commit_changes ;;
+    4) create_pull_request ;;
+    5) merge_pull_request ;;
+    6) list_issues ;;
+    7) exit ;;
+    *) echo "Invalid choice";;
+esac
+
