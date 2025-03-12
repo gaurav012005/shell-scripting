@@ -1,0 +1,15 @@
+
+#!/bin/bash
+
+<<comment 
+anything 
+in 
+paragraph
+for closing 
+write first word to close or #>>
+comment
+
+name= "gaurav"
+
+echo "name is : $name , and date is $(date)" 
+
